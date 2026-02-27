@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="fr" data-fr-scheme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande de protection fonctionnelle</title>
+
+    <!-- Script de chargement du thème pour éviter le flash -->
+    <script type="module">
+        const e="system",t="dark",c="dark",o="data-fr-theme",a="data-fr-scheme",r=`:root[${o}], :root[${a}]`,m=()=>{document.documentElement.setAttribute(o,c),document.documentElement.style.colorScheme="dark"},n=()=>{window.matchMedia("(prefers-color-scheme: dark)").matches&&m()};(()=>{if(document.documentElement.matches(r)){const c=(()=>{try{return"localStorage"in window&&null!==window.localStorage}catch(e){return!1}})()?localStorage.getItem("scheme"):"",o=document.documentElement.getAttribute(a);switch(!0){case c===t:m();break;case c===e:n();break;case o===t:m();break;case o===e:n()}}})();
+    </script>
+
+    <!-- Ressources locales pour garantir la pérennité et l'indépendance vis-à-vis des CDN -->
+    <link rel="stylesheet" href="assets/css/dsfr.min.css">
+    <link rel="stylesheet" href="assets/css/remixicon.css">
+    <style>
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        body {
+            background-color: var(--background-alt-grey, #f6f6f6);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .form-card {
+            background: var(--background-default-grey, white);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--raised-shadow, 0 1px 4px rgba(0, 0, 0, 0.1));
+            border: 1px solid var(--border-default-grey, #e5e5e5);
+        }
+        .mail-output {
+            background: var(--background-alt-grey, #f6f6f6);
+            border: 1px solid var(--border-default-grey, #ddd);
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            color: var(--text-default-grey);
+        }
+        .section-title {
+            color: var(--text-title-blue-france, #000091);
+            border-bottom: 2px solid var(--border-plain-blue-france, #000091);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        .field-required {
+            color: #ce0500;
+        }
+        .success-message {
+            background-color: #b8fec9;
+            color: #18753c;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            display: none;
+        }
+        .error-message {
+            background-color: #ffe9e9;
+            color: #ce0500;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            display: none;
+            border: 1px solid #ce0500;
+        }
+        /* Styles obsolètes - conservés pour compatibilité mais remplacés par DSFR */
+        .field-error {
+            color: #ce0500;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        /* S'assurer que les messages DSFR sont cachés par défaut s'ils n'ont pas de contenu */
+        .fr-messages-group .fr-message:empty {
+            display: none !important;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .button-group .fr-btn {
+            flex: 1 1 auto;
+            min-width: 200px;
+        }
+        /* Modal personnalisée pour la limite mailto */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 17, 0.64);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1rem;
+        }
+        .custom-modal-overlay.active {
+            display: flex;
+        }
+        .custom-modal-content {
+            background: var(--background-default-grey, #fff);
+            padding: 2rem;
+            border-radius: 0.25rem;
+            max-width: 50rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+            box-shadow: 0 16px 16px -16px rgba(0, 0, 0, 0.32), 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .custom-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        .custom-modal-header h2 {
+            margin: 0;
+            color: var(--text-title-grey, #161616);
+            font-size: 1.375rem;
+            font-weight: 700;
+            line-height: 1.75rem;
+        }
+        .custom-modal-close {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: var(--text-default-grey, #3a3a3a);
+            min-width: 2.5rem;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-modal-close:hover {
+            background: var(--background-default-grey-hover, #f6f6f6);
+        }
+        .custom-modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .custom-modal-footer .fr-btn {
+            flex: 0 0 auto;
+        }
+        @media (max-width: 768px) {
+            .custom-modal-footer {
+                flex-direction: column;
+            }
+            .custom-modal-footer .fr-btn {
+                width: 100%;
+            }
+        }
+        /* Amélioration de la responsivité du label RGPD sans surcharger le DSFR */
+        .fr-checkbox-group .fr-label {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        /* Classe pour les champs en majuscules */
+        .uppercase-input {
+            text-transform: uppercase;
+        }
+        /* Classe pour les champs en minuscules */
+        .lowercase-input {
+            text-transform: lowercase;
+        }
+        /* En-tête de la page */
+        .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .page-header {
+            flex: 1;
+        }
+        .theme-toggle-wrapper {
+            flex-shrink: 0;
+        }
+        .page-title {
+            color: var(--text-title-blue-france, #000091);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .page-subtitle {
+            color: var(--text-mention-grey, #666);
+            font-size: 1rem;
+            margin: 0;
+        }
+        /* Skip link pour l'accessibilité */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--background-action-high-blue-france, #000091);
+            color: var(--text-inverted-grey, white);
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: 0 0 4px 0;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+        /* Texte visible uniquement pour les lecteurs d'écran */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+                padding: 0 0.5rem;
+            }
+            .form-card {
+                padding: 1rem;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .button-group .fr-btn {
+                width: 100%;
+                min-width: 0;
+            }
+            /* Amélioration de la responsivité de la modal RGPD sur mobile */
+            #rgpdModal .fr-modal__body {
+                padding: 0;
+                margin: 0;
+                max-height: 80vh;
+                display: flex;
+                flex-direction: column;
+            }
+            #rgpdModal .fr-modal__header {
+                padding: 0.75rem;
+                padding-bottom: 0.5rem;
+                flex-shrink: 0;
+            }
+            #rgpdModal .fr-modal__content {
+                padding: 0 0.75rem;
+                overflow-y: auto;
+                flex: 1;
+            }
+            #rgpdModal .fr-modal__content p {
+                font-size: 0.8125rem;
+                line-height: 1.6;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                margin-bottom: 0.75rem;
+                text-align: justify;
+            }
+            #rgpdModal .fr-modal__content p:last-child {
+                margin-bottom: 0;
+            }
+            #rgpdModal .fr-modal__title {
+                font-size: 1.125rem;
+                word-wrap: break-word;
+                line-height: 1.4;
+                margin-bottom: 1rem;
+            }
+            #rgpdModal .fr-container {
+                padding: 0;
+            }
+            #rgpdModal .fr-modal__footer {
+                padding: 0.75rem;
+                padding-top: 0.5rem;
+                background: var(--background-default-grey, white);
+                border-top: 1px solid var(--border-default-grey, #e5e5e5);
+                flex-shrink: 0;
+            }
+            #rgpdModal .fr-btn--close {
+                min-width: 2.5rem;
+                min-height: 2.5rem;
+                padding: 0.5rem;
+            }
+            /* Ajustements spécifiques pour le label RGPD sur mobile */
+            .fr-checkbox-group .fr-label {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+            /* En-tête responsive */
+            .header-wrapper {
+                margin-bottom: 1.5rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .theme-toggle-wrapper {
+                order: -1;
+                text-align: right;
+                margin-bottom: 1rem;
+            }
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .page-subtitle {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#demandeForm" class="skip-link">Aller au contenu principal</a>
+    <div class="fr-container container">
+        <div class="header-wrapper">
+            <header class="page-header">
+                <h1 class="page-title">
+                    Direction générale de la gendarmerie nationale
+                </h1>
+                <p class="page-subtitle">
+                    Demande de protection fonctionnelle
+                </p>
+                <p class="page-subtitle" style="font-size: 0.75rem; margin-top: 0.5rem; color: #666; line-height: 1.4;">
+                    Art. L. 4123-10 du code de la défense et L. 113-1 du code de la sécurité intérieure pour les militaires<br>
+                    Art. L. 134-1 et suivants du code général de la fonction publique pour les personnels civils<br>
+                    Dispositif explicité dans la fiche GPRH Astrée 4.7.1.1
+                </p>
+            </header>
+            <div class="theme-toggle-wrapper">
+                <button class="fr-btn fr-btn--display"
+                        aria-controls="fr-theme-modal"
+                        data-fr-opened="false"
+                        title="Paramètres d'affichage"
+                        type="button">
+                    Paramètres d'affichage
+                </button>
+            </div>
+        </div>
+        <form id="demandeForm">
+            <!-- Informations générales -->
+            <div class="form-card">
+                <h2 class="section-title">Informations générales</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="typeGroup">
+                            <label class="fr-label" for="type">
+                                Type de demande <span class="field-required">*</span>
+                            </label>
+                            <select class="fr-select" id="type" name="type" required aria-describedby="type-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="VICTIME">Victime</option>
+                                <option value="MIS EN CAUSE">Mis en cause</option>
+                            </select>
+                            <div class="fr-messages-group" id="type-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="typeError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="typeSuccess" style="display: none;">Type sélectionné</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations sur le demandeur -->
+            <div class="form-card">
+                <h2 class="section-title">Informations sur le demandeur</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <!-- Bloc 1 : Identité civile -->
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="nomGroup">
+                            <label class="fr-label" for="nom">
+                                Nom <span class="field-required">*</span>
+                            </label>
+                            <input class="fr-input uppercase-input" type="text" id="nom" name="nom" placeholder="NOM" required autocomplete="family-name" aria-describedby="nom-messages">
+                            <div class="fr-messages-group" id="nom-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="nomError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="nomSuccess" style="display: none;">Nom valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="prenomGroup">
+                            <label class="fr-label" for="prenom">
+                                Prénom <span class="field-required">*</span>
+                            </label>
+                            <input class="fr-input" type="text" id="prenom" name="prenom" placeholder="Prénom" required autocomplete="given-name" aria-describedby="prenom-messages">
+                            <div class="fr-messages-group" id="prenom-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="prenomError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="prenomSuccess" style="display: none;">Prénom valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="gradeGroup">
+                            <label class="fr-label" for="grade">
+                                Grade ou civilité <span class="field-required">*</span>
+                            </label>
+                            <select class="fr-select" id="grade" name="grade" required aria-describedby="grade-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="GEN">Général (GEN)</option>
+                                <option value="COL">Colonel (COL)</option>
+                                <option value="LCL">Lieutenant-colonel (LCL)</option>
+                                <option value="CEN">Chef d'escadron (CEN)</option>
+                                <option value="CDT">Commandant (CDT)</option>
+                                <option value="CNE">Capitaine (CNE)</option>
+                                <option value="LTN">Lieutenant (LTN)</option>
+                                <option value="SLT">Sous-lieutenant (SLT)</option>
+                                <option value="ASP">Aspirant (ASP)</option>
+                                <option value="MAJ">Major (MAJ)</option>
+                                <option value="ADC">Adjudant-chef (ADC)</option>
+                                <option value="ADJ">Adjudant (ADJ)</option>
+                                <option value="MDC">Maréchal des logis-chef (MDC)</option>
+                                <option value="GND">Gendarme (GND)</option>
+                                <option value="ELG">Élève gendarme (ELG)</option>
+                                <option value="MDL">Maréchal des logis (MDL)</option>
+                                <option value="BRC">Brigadier-chef (BRC)</option>
+                                <option value="BRI">Brigadier (BRI)</option>
+                                <option value="GAV">Gendarme adjoint volontaire (GAV)</option>
+                                <option value="GA2">Gendarme adjoint de 2ème classe (GA2)</option>
+                                <option value="Mme">Madame (Mme)</option>
+                                <option value="M">Monsieur (M)</option>
+                            </select>
+                            <div class="fr-messages-group" id="grade-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="gradeError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="gradeSuccess" style="display: none;">Grade sélectionné</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloc 2 : Données professionnelles -->
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="nigendGroup">
+                            <label class="fr-label" for="nigend">NIGEND</label>
+                            <input class="fr-input" type="text" id="nigend" name="nigend" placeholder="Ex: 123456" pattern="[0-9]{5,6}" aria-describedby="nigend-messages">
+                            <div class="fr-messages-group" id="nigend-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="nigendError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="nigendSuccess" style="display: none;">NIGEND valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="statutDemandeurGroup">
+                            <label class="fr-label" for="statutDemandeur">
+                                Statut du demandeur <span class="field-required">*</span>
+                            </label>
+                            <select class="fr-select" id="statutDemandeur" name="statutDemandeur" required aria-describedby="statutDemandeur-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="OG">OG</option>
+                                <option value="OCTA">OCTA</option>
+                                <option value="SOG">SOG</option>
+                                <option value="CSTAGN">CSTAGN</option>
+                                <option value="GAV">GAV</option>
+                                <option value="Civil">Civil</option>
+                                <option value="Reserviste">Réserviste</option>
+                                <option value="Retraite">Retraité</option>
+                                <option value="Ayant_droit">Ayant-droit</option>
+                            </select>
+                            <div class="fr-messages-group" id="statutDemandeur-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="statutDemandeurError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="statutDemandeurSuccess" style="display: none;">Statut sélectionné</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="brancheGroup">
+                            <label class="fr-label" for="branche">Branche</label>
+                            <select class="fr-select" id="branche" name="branche" aria-describedby="branche-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="GD">GD</option>
+                                <option value="GM">GM</option>
+                                <option value="GR">GR</option>
+                                <option value="Etat_Major">État-Major</option>
+                                <option value="GIE_SPE">GIE SPÉ</option>
+                                <option value="DG_et_ORG_CENTRAUX">DG et ORG. CENTRAUX</option>
+                                <option value="GIGN">GIGN</option>
+                            </select>
+                            <div class="fr-messages-group" id="branche-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="brancheError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="brancheSuccess" style="display: none;">Branche sélectionnée</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="formationAdministrativeGroup">
+                            <label class="fr-label" for="formationAdministrative">Formation administrative</label>
+                            <select class="fr-select" id="formationAdministrative" name="formationAdministrative" aria-describedby="formationAdministrative-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="Auvergne-Rhône-Alpes">Auvergne-Rhône-Alpes</option>
+                                <option value="Bourgogne-Franche-Comté">Bourgogne-Franche-Comté</option>
+                                <option value="Bretagne">Bretagne</option>
+                                <option value="Centre-Val-de-Loire">Centre-Val-de-Loire</option>
+                                <option value="Corse">Corse</option>
+                                <option value="Grand Est">Grand Est</option>
+                                <option value="Hauts-de-France">Hauts-de-France</option>
+                                <option value="Île-de-France">Île-de-France</option>
+                                <option value="Nouvelle-Aquitaine">Nouvelle-Aquitaine</option>
+                                <option value="Normandie">Normandie</option>
+                                <option value="Occitanie">Occitanie</option>
+                                <option value="Pays-de-la-Loire">Pays-de-la-Loire</option>
+                                <option value="Provence-Alpes-Côte-d'Azur">Provence-Alpes-Côte-d'Azur</option>
+                                <option value="Guadeloupe">Guadeloupe</option>
+                                <option value="Guyane">Guyane</option>
+                                <option value="Martinique">Martinique</option>
+                                <option value="Mayotte">Mayotte</option>
+                                <option value="Nouvelle-Calédonie">Nouvelle-Calédonie</option>
+                                <option value="Wallis-et-Futuna">Wallis-et-Futuna</option>
+                                <option value="Polynésie française">Polynésie française</option>
+                                <option value="La Réunion">La Réunion</option>
+                                <option value="Saint Barthélémy / Saint-Martin">Saint Barthélémy / Saint-Martin</option>
+                                <option value="Saint-Pierre-et-Miquelon">Saint-Pierre-et-Miquelon</option>
+                                <option value="Garde républicaine">Garde républicaine</option>
+                                <option value="IGAG">IGAG</option>
+                                <option value="IGGN">IGGN</option>
+                                <option value="DGGN">DGGN</option>
+                                <option value="GIGN">GIGN</option>
+                                <option value="COMSOPGN">COMSOPGN</option>
+                                <option value="PJGN">PJGN</option>
+                                <option value="CEGN">CEGN</option>
+                                <option value="CGOM">CGOM</option>
+                                <option value="CRJ">CRJ</option>
+                                <option value="ANFSI">ANFSI</option>
+                                <option value="COSSEN">COSSEN</option>
+                                <option value="COMCYBER-MI">COMCYBER-MI</option>
+                                <option value="CESAN">CESAN</option>
+                                <option value="SAILMI">SAILMI</option>
+                                <option value="GSAN">GSAN</option>
+                                <option value="GTA">GTA</option>
+                                <option value="GARM">GARM</option>
+                                <option value="CFAGN">CFAGN</option>
+                                <option value="GMAR">GMAR</option>
+                                <option value="GAIR">GAIR</option>
+                                <option value="AUTRE">AUTRE</option>
+                            </select>
+                            <div class="fr-messages-group" id="formationAdministrative-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="formationAdministrativeError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="formationAdministrativeSuccess" style="display: none;">Formation sélectionnée</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="departementGroup">
+                            <label class="fr-label" for="departement">Département d'affectation</label>
+                            <select class="fr-select" id="departement" name="departement" aria-describedby="departement-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="2A">2A</option>
+                                <option value="2B">2B</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                                <option value="31">31</option>
+                                <option value="32">32</option>
+                                <option value="33">33</option>
+                                <option value="34">34</option>
+                                <option value="35">35</option>
+                                <option value="36">36</option>
+                                <option value="37">37</option>
+                                <option value="38">38</option>
+                                <option value="39">39</option>
+                                <option value="40">40</option>
+                                <option value="41">41</option>
+                                <option value="42">42</option>
+                                <option value="43">43</option>
+                                <option value="44">44</option>
+                                <option value="45">45</option>
+                                <option value="46">46</option>
+                                <option value="47">47</option>
+                                <option value="48">48</option>
+                                <option value="49">49</option>
+                                <option value="50">50</option>
+                                <option value="51">51</option>
+                                <option value="52">52</option>
+                                <option value="53">53</option>
+                                <option value="54">54</option>
+                                <option value="55">55</option>
+                                <option value="56">56</option>
+                                <option value="57">57</option>
+                                <option value="58">58</option>
+                                <option value="59">59</option>
+                                <option value="60">60</option>
+                                <option value="61">61</option>
+                                <option value="62">62</option>
+                                <option value="63">63</option>
+                                <option value="64">64</option>
+                                <option value="65">65</option>
+                                <option value="66">66</option>
+                                <option value="67">67</option>
+                                <option value="68">68</option>
+                                <option value="69">69</option>
+                                <option value="70">70</option>
+                                <option value="71">71</option>
+                                <option value="72">72</option>
+                                <option value="73">73</option>
+                                <option value="74">74</option>
+                                <option value="75">75</option>
+                                <option value="76">76</option>
+                                <option value="77">77</option>
+                                <option value="78">78</option>
+                                <option value="79">79</option>
+                                <option value="80">80</option>
+                                <option value="81">81</option>
+                                <option value="82">82</option>
+                                <option value="83">83</option>
+                                <option value="84">84</option>
+                                <option value="85">85</option>
+                                <option value="86">86</option>
+                                <option value="87">87</option>
+                                <option value="88">88</option>
+                                <option value="89">89</option>
+                                <option value="90">90</option>
+                                <option value="91">91</option>
+                                <option value="92">92</option>
+                                <option value="93">93</option>
+                                <option value="94">94</option>
+                                <option value="95">95</option>
+                                <option value="971">971</option>
+                                <option value="972">972</option>
+                                <option value="973">973</option>
+                                <option value="974">974</option>
+                                <option value="975">975</option>
+                                <option value="976">976</option>
+                                <option value="977">977</option>
+                                <option value="978">978</option>
+                                <option value="986">986</option>
+                                <option value="987">987</option>
+                                <option value="988">988</option>
+                            </select>
+                            <div class="fr-messages-group" id="departement-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="departementError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="departementSuccess" style="display: none;">Département sélectionné</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12">
+                        <div class="fr-input-group" id="uniteGroup">
+                            <label class="fr-label" for="unite">Unité</label>
+                            <input class="fr-input uppercase-input" type="text" id="unite" name="unite" placeholder="Ex: COB BALMA" aria-describedby="unite-messages">
+                            <div class="fr-messages-group" id="unite-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="uniteError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="uniteSuccess" style="display: none;">Unité valide</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contacts -->
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="emailProGroup">
+                            <label class="fr-label" for="emailPro">
+                                Courriel professionnel <span class="field-required">*</span>
+                            </label>
+                            <input class="fr-input lowercase-input" type="email" id="emailPro" name="emailPro" placeholder="prenom.nom@gendarmerie.interieur.gouv.fr" autocomplete="work email" readonly aria-describedby="emailPro-messages">
+                            <div class="fr-messages-group" id="emailPro-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="emailProError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="emailProSuccess" style="display: none;">Courriel professionnel valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="emailPersoGroup">
+                            <label class="fr-label" for="emailPerso">Courriel personnel <span class="field-required">*</span></label>
+                            <input class="fr-input lowercase-input" type="email" id="emailPerso" name="emailPerso" placeholder="exemple@gmail.com" autocomplete="home email" aria-describedby="emailPerso-messages">
+                            <div class="fr-messages-group" id="emailPerso-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="emailPersoError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="emailPersoSuccess" style="display: none;">Courriel personnel valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12">
+                        <p class="text-sm" style="color: #666; font-style: italic; margin-top: 0.5rem;">
+                            * Au moins une adresse email (professionnelle ou personnelle) est requise
+                        </p>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="telProGroup">
+                            <label class="fr-label" for="telPro">
+                                TPH professionnel <span class="field-required">*</span>
+                            </label>
+                            <input class="fr-input" type="tel" id="telPro" name="telPro" placeholder="0612345678" autocomplete="tel" aria-describedby="telPro-messages">
+                            <div class="fr-messages-group" id="telPro-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="telProError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="telProSuccess" style="display: none;">Téléphone professionnel valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="telPersoGroup">
+                            <label class="fr-label" for="telPerso">TPH personnel <span class="field-required">*</span></label>
+                            <input class="fr-input" type="tel" id="telPerso" name="telPerso" placeholder="0723456789" autocomplete="tel-national" aria-describedby="telPerso-messages">
+                            <div class="fr-messages-group" id="telPerso-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="telPersoError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="telPersoSuccess" style="display: none;">Téléphone personnel valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12">
+                        <p class="text-sm" style="color: #666; font-style: italic; margin-top: 0.5rem;">
+                            * Au moins un numéro de téléphone (professionnel ou personnel) est requis
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations sur les faits -->
+            <div class="form-card">
+                <h2 class="section-title">Informations sur les faits</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-md-4">
+                        <div class="fr-input-group" id="dateFaitsGroup">
+                            <label class="fr-label" for="dateFaits">Date des faits</label>
+                            <input class="fr-input" type="date" id="dateFaits" name="dateFaits" aria-describedby="dateFaits-messages">
+                            <div class="fr-messages-group" id="dateFaits-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="dateFaitsError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="dateFaitsSuccess" style="display: none;">Date valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4">
+                        <div class="fr-input-group" id="communeGroup">
+                            <label class="fr-label" for="commune">Commune des faits</label>
+                            <input class="fr-input uppercase-input" type="text" id="commune" name="commune" placeholder="L'UNION" autocomplete="off" aria-describedby="commune-messages">
+                            <div class="fr-messages-group" id="commune-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="communeError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="communeSuccess" style="display: none;">Commune valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4">
+                        <div class="fr-input-group" id="codePostalGroup">
+                            <label class="fr-label" for="codePostal">Code postal des faits</label>
+                            <input class="fr-input" type="text" id="codePostal" name="codePostal" placeholder="31240" pattern="^((0[1-9]|[1-8][0-9]|9[0-5])[0-9]{3}|97[1-8][0-9]{2}|98[6-8][0-9]{2})$" autocomplete="nope" readonly aria-describedby="codePostal-messages">
+                            <div class="fr-messages-group" id="codePostal-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="codePostalError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="codePostalSuccess" style="display: none;">Code postal valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="positionGroup">
+                            <label class="fr-label" for="position">Position administrative</label>
+                            <select class="fr-select" id="position" name="position" aria-describedby="position-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="NON PRÉCISÉ">Non précisé</option>
+                                <option value="EN SERVICE">En service</option>
+                                <option value="HORS SERVICE">Hors service</option>
+                            </select>
+                            <div class="fr-messages-group" id="position-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="positionError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="positionSuccess" style="display: none;">Position sélectionnée</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-select-group" id="contexteMissionnelGroup">
+                            <label class="fr-label" for="contexteMissionnel">Contexte missionnel</label>
+                            <select class="fr-select" id="contexteMissionnel" name="contexteMissionnel" aria-describedby="contexteMissionnel-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="Prévention de proximité">Prévention de proximité</option>
+                                <option value="Police route">Police route</option>
+                                <option value="MO/RO">MO/RO</option>
+                                <option value="Police judiciaire">Police judiciaire</option>
+                                <option value="Chargé d'accueil">Chargé d'accueil</option>
+                                <option value="Sécurisation d'événement">Sécurisation d'événement</option>
+                                <option value="Intervention spécialisée">Intervention spécialisée</option>
+                                <option value="Surveillance particulière">Surveillance particulière</option>
+                                <option value="Escorte/Transfèrement">Escorte/Transfèrement</option>
+                                <option value="International">International</option>
+                                <option value="Relations interpersonnelles">Relations interpersonnelles</option>
+                                <option value="Hors service">Hors service</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                            <div class="fr-messages-group" id="contexteMissionnel-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="contexteMissionnelError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="contexteMissionnelSuccess" style="display: none;">Contexte sélectionné</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12">
+                        <div class="fr-select-group" id="qualificationInfractionGroup">
+                            <label class="fr-label" for="qualificationInfraction">Qualification de l'infraction</label>
+                            <select class="fr-select" id="qualificationInfraction" name="qualificationInfraction" aria-describedby="qualificationInfraction-messages">
+                                <option value="">Sélectionner</option>
+                                <option value="OUTRAGE / MENACES">OUTRAGE / MENACES</option>
+                                <option value="RÉBELLION avec ou sans outrage">RÉBELLION avec ou sans outrage</option>
+                                <option value="VIOLENCES hors rébellion">VIOLENCES hors rébellion</option>
+                                <option value="REFUS D'OBTEMPÉRER / Mise en danger de la vie d'autrui">REFUS D'OBTEMPÉRER / Mise en danger de la vie d'autrui</option>
+                                <option value="HARCÈLEMENT MORAL AU TRAVAIL / DISCRIMINATION">HARCÈLEMENT MORAL AU TRAVAIL / DISCRIMINATION</option>
+                                <option value="VIOLENCES SEXUELLES ET SEXISTES">VIOLENCES SEXUELLES ET SEXISTES</option>
+                                <option value="DÉFENSEUR DES DROITS">DÉFENSEUR DES DROITS</option>
+                                <option value="ACCIDENT DE LA CIRC. ROUTIÈRE">ACCIDENT DE LA CIRC. ROUTIÈRE</option>
+                                <option value="DIFFAMATION / INJURES">DIFFAMATION / INJURES</option>
+                                <option value="TENTATIVE D'HOMICIDE">TENTATIVE D'HOMICIDE</option>
+                                <option value="INFRACTION INVOLONTAIRE HORS ACCIDENT CIRC. ROUTIÈRE">INFRACTION INVOLONTAIRE HORS ACCIDENT CIRC. ROUTIÈRE</option>
+                                <option value="AUTRE">AUTRE</option>
+                            </select>
+                            <div class="fr-messages-group" id="qualificationInfraction-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="qualificationInfractionError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="qualificationInfractionSuccess" style="display: none;">Qualification sélectionnée</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12">
+                        <div class="fr-input-group">
+                            <label class="fr-label" for="resume">Résumé de la situation</label>
+                            <textarea class="fr-input" id="resume" name="resume" rows="6" placeholder="Décrivez les faits..." autocomplete="off"></textarea>
+                            <p class="text-sm" style="color: #666; margin-top: 0.5rem; text-align: right;">
+                                <span id="resumeCounter">0</span> / 5000 caractères
+                            </p>
+                        </div>
+                    </div>
+                    <div class="fr-col-12">
+                        <div class="fr-input-group">
+                            <label class="fr-label" for="blessures">Blessures (nombre de jours d'ITT et détail)</label>
+                            <textarea class="fr-input" id="blessures" name="blessures" rows="2" placeholder="Ex: 10 jours d'ITT délivrée par le CHU de L'Union" autocomplete="off" readonly></textarea>
+                            <p class="text-sm" style="color: #666; margin-top: 0.5rem; text-align: right;">
+                                <span id="blessuresCounter">0</span> / 2000 caractères
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations judiciaires -->
+            <div class="form-card">
+                <h2 class="section-title">Informations judiciaires</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12">
+                        <div class="fr-checkbox-group">
+                            <input type="checkbox" id="partieCivile" name="partieCivile">
+                            <label class="fr-label" for="partieCivile">Constitution de partie civile</label>
+                        </div>
+                        <p class="text-sm" style="color: #666; font-style: italic; margin-top: 0.5rem; margin-left: 2rem;">
+                            Cochez cette case pour renseigner le montant des dommages et intérêts
+                        </p>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="montantDommagesGroup">
+                            <label class="fr-label" for="montantDommages">Montant dommages intérêts demandés (€)</label>
+                            <input class="fr-input" type="number" id="montantDommages" name="montantDommages" placeholder="250" min="0" max="999999999" aria-describedby="montantDommages-messages" disabled>
+                            <div class="fr-messages-group" id="montantDommages-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="montantDommagesError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="montantDommagesSuccess" style="display: none;">Montant valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="dateAudienceGroup">
+                            <label class="fr-label" for="dateAudience">Date d'audience</label>
+                            <input class="fr-input" type="date" id="dateAudience" name="dateAudience" aria-describedby="dateAudience-messages">
+                            <div class="fr-messages-group" id="dateAudience-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="dateAudienceError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="dateAudienceSuccess" style="display: none;">Date valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12">
+                        <div class="fr-input-group">
+                            <label class="fr-label" for="qualificationsPenales">Qualification pénale susceptible d'être retenue</label>
+                            <textarea class="fr-input" id="qualificationsPenales" name="qualificationsPenales" rows="2" placeholder="Ex: Violences volontaires sur PDAP"></textarea>
+                            <p class="text-sm" style="color: #666; margin-top: 0.5rem; text-align: right;">
+                                <span id="qualificationsPenalesCounter">0</span> / 2000 caractères
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soutiens demandés -->
+            <div class="form-card">
+                <h2 class="section-title">Soutiens demandés</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-md-4">
+                        <div class="fr-checkbox-group">
+                            <input type="checkbox" id="soutienMedical" name="soutienMedical">
+                            <label class="fr-label" for="soutienMedical">Soutien médical</label>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4">
+                        <div class="fr-checkbox-group">
+                            <input type="checkbox" id="soutienPsychologique" name="soutienPsychologique">
+                            <label class="fr-label" for="soutienPsychologique">Soutien psychologique</label>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4">
+                        <div class="fr-checkbox-group">
+                            <input type="checkbox" id="soutienSocial" name="soutienSocial">
+                            <label class="fr-label" for="soutienSocial">Soutien social</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autorité hiérarchique -->
+            <div class="form-card">
+                <h2 class="section-title">Autorité hiérarchique</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="emailAutoriteHierarchiqueGroup">
+                            <label class="fr-label" for="emailAutoriteHierarchique">Courriel du niveau hiérarchique supérieur</label>
+                            <input class="fr-input lowercase-input" type="email" id="emailAutoriteHierarchique" name="emailAutoriteHierarchique" placeholder="autorite@gendarmerie.interieur.gouv.fr" readonly aria-describedby="emailAutoriteHierarchique-messages">
+                            <div class="fr-messages-group" id="emailAutoriteHierarchique-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="emailAutoriteHierarchiqueError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="emailAutoriteHierarchiqueSuccess" style="display: none;">Courriel valide</p>
+                            </div>
+                            <p class="text-sm" style="color: #666; font-style: italic; margin-top: 0.5rem;">
+                                Veuillez indiquer dans le champ suivant l'adresse mail de votre niveau hiérarchique supérieur afin de le mettre en copie de votre demande.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RGPD -->
+            <div class="form-card">
+                <h2 class="section-title">Protection des données</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12">
+                        <div class="fr-checkbox-group">
+                            <input type="checkbox" id="rgpdConsent" name="rgpdConsent" required>
+                            <label class="fr-label" for="rgpdConsent">
+                                Je confirme avoir pris connaissance des modalités de traitement de mes données personnelles&nbsp;<span class="field-required">*</span>
+                            </label>
+                        </div>
+                        <p style="margin-top: 0.5rem; margin-left: 2rem;">
+                            <button aria-controls="rgpdModal" data-fr-opened="false" type="button" class="fr-btn fr-btn--tertiary fr-btn--sm">Voir les modalités</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engagement de responsabilité -->
+            <div class="form-card">
+                <h2 class="section-title">Engagement de responsabilité</h2>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12">
+                        <div class="fr-checkbox-group">
+                            <input type="checkbox" id="engagementConsent" name="engagementConsent" required>
+                            <label class="fr-label" for="engagementConsent">
+                                Je certifie sur l'honneur l'exactitude des renseignements fournis dans la présente demande&nbsp;<span class="field-required">*</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group" id="signatureNomPrenomGroup">
+                            <label class="fr-label" for="signatureNomPrenom">
+                                Prénom et nom <span class="field-required">*</span>
+                            </label>
+                            <input class="fr-input" type="text" id="signatureNomPrenom" name="signatureNomPrenom" placeholder="Prénom NOM" required aria-describedby="signatureNomPrenom-messages">
+                            <div class="fr-messages-group" id="signatureNomPrenom-messages" aria-live="polite">
+                                <p class="fr-message fr-message--error" id="signatureNomPrenomError" style="display: none;"></p>
+                                <p class="fr-message fr-message--valid" id="signatureNomPrenomSuccess" style="display: none;">Prénom et nom valide</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-6">
+                        <div class="fr-input-group">
+                            <label class="fr-label" for="signatureDate">
+                                Date
+                            </label>
+                            <input class="fr-input" type="text" id="signatureDate" name="signatureDate" readonly style="background-color: #f6f6f6;">
+                            <p class="text-sm" style="color: #666; font-style: italic; margin-top: 0.5rem;">
+                                Date de soumission du formulaire
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgence -->
+            <div class="fr-alert fr-alert--warning" style="margin-bottom: 2rem;">
+                <h3 class="fr-alert__title">En cas d'urgence</h3>
+                <p class="fr-alert__desc">
+                    En cas d'urgence, notamment en cas d'audience le jour même, vous êtes invités à appeler le greffe du BRPF dans les plus brefs délais aux numéros suivants :<br>
+                    <strong><a href="tel:0184222808" style="color: inherit;">01 84 22 28 08</a> - <a href="tel:0184222805" style="color: inherit;">01 84 22 28 05</a></strong>
+                </p>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="form-card">
+                <div class="button-group">
+                    <button type="submit" class="fr-btn">
+                        Générer le mail
+                    </button>
+                    <button type="reset" class="fr-btn fr-btn--tertiary">
+                        Réinitialiser le formulaire
+                    </button>
+                    <!-- Bouton invisible pour ouvrir le modal programmatiquement -->
+                    <button type="button" id="hiddenInfoEnvoiModalTrigger" aria-controls="infoEnvoiModal" data-fr-opened="false" style="display: none;">Ouvrir modal info</button>
+                </div>
+                <div id="errorMessage" class="error-message">
+                    ⚠ Veuillez corriger les erreurs dans le formulaire
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal RGPD -->
+    <dialog id="rgpdModal" class="fr-modal" aria-labelledby="rgpdModalTitle" aria-modal="true">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button aria-controls="rgpdModal" title="Fermer" type="button" class="fr-btn--close fr-btn">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h2 id="rgpdModalTitle" class="fr-modal__title">
+                                Protection des données personnelles (RGPD)
+                            </h2>
+                            <div style="text-align: justify; line-height: 1.6;">
+                                <p>Les informations recueillies sur ce formulaire sont enregistrées dans un fichier informatisé par la sous-direction de l'accompagnement du personnel - bureau des recours et de la protection fonctionnelle pour assurer le suivi de la prise en charge des dossiers de protection fonctionnelle de la gendarmerie nationale afin de fournir un accompagnement juridique aux militaires victimes d'infractions pénales volontaires ou mis en cause en raison de leur qualité, ainsi que de leurs ayants droit. La base légale du traitement est l'obligation légale (art. L.4123-10 du code de la défense, art. L.113-1 du code de la sécurité intérieure et art. L.134-1 à L.134-12 du code général de la fonction publique).</p>
+
+                                <p>Les données marquées par un astérisque dans le formulaire doivent obligatoirement être fournies. Dans le cas contraire, le formulaire ne pourra pas être soumis.</p>
+
+                                <p>Les données collectées seront communiquées aux seuls destinataires suivants : les personnels du bureau des recours et de la protection fonctionnelle et des formations administratives de rattachement du demandeur, les avocats désignés par les militaires, ainsi que les organismes payeurs (secrétariats généraux pour l'administration du ministère de l'Intérieur - SGAMI - et services administratifs et techniques de la police nationale - SATPN).</p>
+
+                                <p>Les données sont conservées le temps de la procédure judiciaire ou civile, jusqu'à l'indemnisation complète des demandeurs et au règlement pour les avocats.</p>
+
+                                <p>Vous pouvez accéder aux données vous concernant, les rectifier ou exercer votre droit à la limitation du traitement.</p>
+
+                                <p>Consultez le site de la CNIL (<a href="http://www.cnil.fr/">cnil.fr</a>) pour plus d'informations sur vos droits.</p>
+
+                                <p>Pour exercer ces droits ou pour toute question sur le traitement de vos données dans ce dispositif, vous pouvez contacter le bureau des recours et de la protection fonctionnelle : brpf.sdap.dggn@gendarmerie.interieur.gouv.fr ou par voie postale : 4, rue Claude Bernard, CS 60003, 92130 ISSY-LES-MOULINEAUX CEDEX.</p>
+
+                                <p>Si vous estimez, après nous avoir contactés, que vos droits « Informatique et Libertés » ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL.</p>
+                            </div>
+                        </div>
+                        <div class="fr-modal__footer">
+                            <button aria-controls="rgpdModal" type="button" class="fr-btn">
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Modal Information avant envoi -->
+    <dialog id="infoEnvoiModal" class="fr-modal" aria-labelledby="infoEnvoiModalTitle" aria-modal="true" data-fr-opened="false">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button aria-controls="infoEnvoiModal" title="Fermer" type="button" class="fr-btn--close fr-btn">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h2 id="infoEnvoiModalTitle" class="fr-modal__title">
+                                Informations importantes avant l'envoi
+                            </h2>
+                            <div class="fr-alert fr-alert--info" style="margin-bottom: 1.5rem;">
+                                <p class="fr-alert__title">Ouverture du client mail</p>
+                                <p>Votre client de messagerie va s'ouvrir avec un mail pré-rempli.</p>
+                            </div>
+                            <div style="line-height: 1.6;">
+                                <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-title-grey);">Instructions importantes :</h3>
+                                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                                    <li style="margin-bottom: 0.75rem;">
+                                        <strong>Ne modifiez pas le corps du texte généré</strong> - Le contenu a été formaté spécifiquement pour le traitement de votre demande
+                                    </li>
+                                    <li style="margin-bottom: 0.75rem;">
+                                        <strong>Vous pouvez ajouter des pièces jointes</strong> - Joignez tous les documents que vous jugez utiles à votre demande (photos, certificats médicaux, procès-verbaux, etc.)
+                                    </li>
+                                    <li style="margin-bottom: 0.75rem;">
+                                        <strong>Vous serez contacté par téléphone</strong> - Un personnel du BRPF ou de votre BAP vous contactera pour un suivi personnalisé de votre demande
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-modal__footer">
+                            <ul class="fr-btns-group fr-btns-group--inline-md">
+                                <li>
+                                    <button type="button" class="fr-btn" id="confirmEnvoiBtn">
+                                        J'ai compris, ouvrir le client mail
+                                    </button>
+                                </li>
+                                <li>
+                                    <button aria-controls="infoEnvoiModal" type="button" class="fr-btn fr-btn--secondary">
+                                        Annuler
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Modal Paramètres d'affichage -->
+    <dialog id="fr-theme-modal" class="fr-modal" aria-labelledby="fr-theme-modal-title">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn"
+                                    aria-controls="fr-theme-modal"
+                                    title="Fermer"
+                                    type="button">
+                                Fermer
+                            </button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h1 id="fr-theme-modal-title" class="fr-modal__title">
+                                Paramètres d'affichage
+                            </h1>
+                            <div id="fr-display" class="fr-display">
+                                <fieldset class="fr-fieldset" id="display-fieldset">
+                                    <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="display-fieldset-legend">
+                                        Choisissez un thème pour personnaliser l'apparence du site.
+                                    </legend>
+                                    <div class="fr-fieldset__element">
+                                        <div class="fr-radio-group fr-radio-rich">
+                                            <input value="light" type="radio" id="fr-radios-theme-light" name="fr-radios-theme">
+                                            <label class="fr-label" for="fr-radios-theme-light">
+                                                Thème clair
+                                            </label>
+                                            <div class="fr-radio-rich__pictogram">
+                                                <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                                                    <use class="fr-artwork-decorative" href="dist/artwork/pictograms/environment/sun.svg#artwork-decorative"></use>
+                                                    <use class="fr-artwork-minor" href="dist/artwork/pictograms/environment/sun.svg#artwork-minor"></use>
+                                                    <use class="fr-artwork-major" href="dist/artwork/pictograms/environment/sun.svg#artwork-major"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-fieldset__element">
+                                        <div class="fr-radio-group fr-radio-rich">
+                                            <input value="dark" type="radio" id="fr-radios-theme-dark" name="fr-radios-theme">
+                                            <label class="fr-label" for="fr-radios-theme-dark">
+                                                Thème sombre
+                                            </label>
+                                            <div class="fr-radio-rich__pictogram">
+                                                <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                                                    <use class="fr-artwork-decorative" href="dist/artwork/pictograms/environment/moon.svg#artwork-decorative"></use>
+                                                    <use class="fr-artwork-minor" href="dist/artwork/pictograms/environment/moon.svg#artwork-minor"></use>
+                                                    <use class="fr-artwork-major" href="dist/artwork/pictograms/environment/moon.svg#artwork-major"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-fieldset__element">
+                                        <div class="fr-radio-group fr-radio-rich">
+                                            <input value="system" type="radio" id="fr-radios-theme-system" name="fr-radios-theme">
+                                            <label class="fr-label" for="fr-radios-theme-system">
+                                                Système
+                                                <span class="fr-hint-text">Utilise les paramètres système</span>
+                                            </label>
+                                            <div class="fr-radio-rich__pictogram">
+                                                <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                                                    <use class="fr-artwork-decorative" href="dist/artwork/pictograms/system/system.svg#artwork-decorative"></use>
+                                                    <use class="fr-artwork-minor" href="dist/artwork/pictograms/system/system.svg#artwork-minor"></use>
+                                                    <use class="fr-artwork-major" href="dist/artwork/pictograms/system/system.svg#artwork-major"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Configuration DSFR avant chargement -->
+    <script>
+        window.dsfr = {
+            verbose: false,
+            mode: 'loaded'
+        };
+    </script>
+    <!-- Scripts locaux - Pas de dépendance externe -->
+    <script src="assets/js/dsfr.module.min.js"></script>
+    <script src="assets/js/crypto-js.min.js"></script>
+    <script src="generateur-demande-pf.js"></script>
+</body>
+</html>
