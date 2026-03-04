@@ -5,7 +5,7 @@
 ### Étape 1 : Créer le ZIP
 
 ```bash
-cd /Users/roman/PF360/formulaire-appli-pf
+cd ~/PF360-formulaire-appli
 zip -r ../formulaire-pf-standalone.zip . -x "*.DS_Store" -x "*.git*"
 ```
 
