@@ -261,13 +261,17 @@ function setupEventListeners() {
     }
 
     // Validation de la date d'audience
-    const dateAudience = document.getElementById('dateAudience');
-    if (dateAudience) {
-        dateAudience.addEventListener('change', function() {
+    const dateAudienceDate = document.getElementById('dateAudienceDate');
+    const dateAudienceTime = document.getElementById('dateAudienceTime');
+    if (dateAudienceDate) {
+        dateAudienceDate.addEventListener('change', function() {
             validateDateAudience();
             scheduleSaveDraft();
         });
-        dateAudience.addEventListener('blur', validateDateAudience);
+        dateAudienceDate.addEventListener('blur', validateDateAudience);
+    }
+    if (dateAudienceTime) {
+        dateAudienceTime.addEventListener('change', scheduleSaveDraft);
     }
 
     // Gestion de la constitution de partie civile
@@ -930,16 +934,16 @@ function validateMontantDommages() {
 
 // Validation de la date d'audience
 function validateDateAudience() {
-    const dateAudience = document.getElementById('dateAudience');
-    const value = dateAudience.value;
+    const dateAudienceDate = document.getElementById('dateAudienceDate');
+    const value = dateAudienceDate.value;
 
     if (!value) {
-        setFieldState('dateAudience', 'neutral');
+        setFieldState('dateAudienceDate', 'neutral');
         return true;
     }
 
     // Simplement valider qu'une date est sélectionnée (pas de restriction passé/futur)
-    setFieldState('dateAudience', 'success');
+    setFieldState('dateAudienceDate', 'success');
     return true;
 }
 
@@ -1059,6 +1063,16 @@ function formatDate(dateString) {
     return `${day}/${month}/${year}`;
 }
 
+function formatDateTime(dateString, timeString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    if (timeString) return `${day}/${month}/${year} ${timeString}`;
+    return `${day}/${month}/${year}`;
+}
+
 // ============ GÉNÉRATION DU MAIL ============
 
 function generateMail(formData) {
@@ -1094,7 +1108,7 @@ function generateMail(formData) {
     mail += `Constitution de partie civile: ${formData.partieCivile ? 'OUI' : 'NON'}\r\n`;
     mail += `Montant dommages intérêts: ${formData.montantDommages}\r\n`;
     mail += `Qualification pénale susceptible d'être retenue: ${formData.qualificationsPenales}\r\n`;
-    mail += `Date d'audience: ${formatDate(formData.dateAudience)}\r\n\r\n`;
+    mail += `Date d'audience: ${formatDateTime(formData.dateAudienceDate, formData.dateAudienceTime)}\r\n\r\n`;
 
     mail += '=== SOUTIENS DEMANDÉS ===\r\n\r\n';
     mail += `Soutien médical: ${formData.soutienMedical ? 'OUI' : 'NON'}\r\n`;
@@ -1145,7 +1159,8 @@ function getFormData() {
         partieCivile: document.getElementById('partieCivile').checked,
         montantDommages: document.getElementById('montantDommages').value,
         qualificationsPenales: document.getElementById('qualificationsPenales').value,
-        dateAudience: document.getElementById('dateAudience').value,
+        dateAudienceDate: document.getElementById('dateAudienceDate').value,
+        dateAudienceTime: document.getElementById('dateAudienceTime').value,
         soutienMedical: document.getElementById('soutienMedical').checked,
         soutienPsychologique: document.getElementById('soutienPsychologique').checked,
         soutienSocial: document.getElementById('soutienSocial').checked,
@@ -1304,7 +1319,7 @@ function scrollToFirstError(nigendValid, nomValid, prenomValid, phonesValid, ema
     } else if (!montantDommagesValid) {
         document.getElementById('montantDommages').scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else if (!dateAudienceValid) {
-        document.getElementById('dateAudience').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('dateAudienceDate').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
@@ -1516,7 +1531,7 @@ function handleFormReset(e) {
                                'telPro', 'telPerso', 'codePostal', 'emailAutoriteHierarchique', 'unite',
                                'type', 'grade', 'statutDemandeur', 'branche', 'formationAdministrative',
                                'departement', 'position', 'contexteMissionnel', 'qualificationInfraction',
-                               'dateFaits', 'commune', 'montantDommages', 'dateAudience'];
+                               'dateFaits', 'commune', 'montantDommages', 'dateAudienceDate'];
         fieldsToReset.forEach(fieldId => {
             setFieldState(fieldId, 'neutral');
         });

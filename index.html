@@ -883,8 +883,11 @@
                     </div>
                     <div class="fr-col-12 fr-col-md-6">
                         <div class="fr-input-group" id="dateAudienceGroup">
-                            <label class="fr-label" for="dateAudience">Date d'audience</label>
-                            <input class="fr-input" type="date" id="dateAudience" name="dateAudience" aria-describedby="dateAudience-messages">
+                            <label class="fr-label">Date d'audience</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input class="fr-input" type="date" id="dateAudienceDate" name="dateAudienceDate" aria-describedby="dateAudience-messages">
+                                <input class="fr-input" type="time" id="dateAudienceTime" name="dateAudienceTime" aria-describedby="dateAudience-messages" style="max-width: 8rem;">
+                            </div>
                             <div class="fr-messages-group" id="dateAudience-messages" aria-live="polite">
                                 <p class="fr-message fr-message--error" id="dateAudienceError" style="display: none;"></p>
                                 <p class="fr-message fr-message--valid" id="dateAudienceSuccess" style="display: none;">Date valide</p>
