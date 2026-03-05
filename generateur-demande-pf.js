@@ -314,6 +314,27 @@ function setupEventListeners() {
         });
     }
 
+    const secoursEnvoiBtn = document.getElementById('secoursEnvoiBtn');
+    if (secoursEnvoiBtn) {
+        secoursEnvoiBtn.addEventListener('click', function() {
+            console.log('Générateur PF: Affichage du modal de secours demandé par l\'utilisateur');
+            if (!pendingMailtoData) {
+                console.error('Aucune donnée mailto en attente');
+                return;
+            }
+            const { mailText, subject, ccEmails } = pendingMailtoData;
+            // Fermer le modal d'information
+            const modal = document.getElementById('infoEnvoiModal');
+            if (modal) {
+                modal.setAttribute('data-fr-opened', 'false');
+                modal.close();
+            }
+            pendingMailtoData = null;
+            // Afficher le modal de secours (copier-coller)
+            showMailtoLimitModal(mailText, subject, ccEmails);
+        });
+    }
+
     // Autosave sur tous les champs
     form.addEventListener('input', scheduleSaveDraft);
     form.addEventListener('change', scheduleSaveDraft);
