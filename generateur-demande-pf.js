@@ -317,7 +317,7 @@ function setupEventListeners() {
     const secoursEnvoiBtn = document.getElementById('secoursEnvoiBtn');
     if (secoursEnvoiBtn) {
         secoursEnvoiBtn.addEventListener('click', function() {
-            console.log('Générateur PF: Affichage du modal de secours demandé par l\'utilisateur');
+            console.log('Générateur PF: Affichage du modal sans client mail demandé par l\'utilisateur');
             if (!pendingMailtoData) {
                 console.error('Aucune donnée mailto en attente');
                 return;
@@ -330,8 +330,8 @@ function setupEventListeners() {
                 modal.close();
             }
             pendingMailtoData = null;
-            // Afficher le modal de secours (copier-coller)
-            showMailtoLimitModal(mailText, subject, ccEmails);
+            // Afficher le modal pour envoi manuel (sans client mail)
+            showNoMailClientModal(mailText, subject, ccEmails);
         });
     }
 
@@ -1380,19 +1380,18 @@ function showMailtoLimitModal(mailText, subject, ccEmails) {
     // Header
     const header = document.createElement('div');
     header.className = 'custom-modal-header';
-    const h2 = document.createElement('h2');
-    h2.textContent = 'Contenu trop long pour le client mail';
     const closeBtn = document.createElement('button');
-    closeBtn.className = 'custom-modal-close';
-    closeBtn.setAttribute('aria-label', 'Fermer la fenêtre');
-    closeBtn.innerHTML = '✕<span class="sr-only">Fermer la fenêtre</span>';
+    closeBtn.className = 'fr-btn--close fr-btn';
+    closeBtn.textContent = 'Fermer';
     closeBtn.addEventListener('click', closeModal);
-    header.appendChild(h2);
     header.appendChild(closeBtn);
 
     // Body
     const body = document.createElement('div');
     body.className = 'custom-modal-body';
+    const h2 = document.createElement('h2');
+    h2.className = 'custom-modal-title';
+    h2.textContent = 'Contenu trop long pour le client mail';
 
     // Alert
     const alert = document.createElement('div');
@@ -1480,6 +1479,7 @@ function showMailtoLimitModal(mailText, subject, ccEmails) {
     inputGroup.appendChild(textarea);
 
     // Assembler
+    body.appendChild(h2);
     body.appendChild(alert);
     body.appendChild(footer);
     body.appendChild(callout);
@@ -1536,6 +1536,183 @@ function showMailtoLimitModal(mailText, subject, ccEmails) {
     });
 
     // Fermer la modal en cliquant sur l'overlay
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            closeModal();
+        }
+    });
+}
+
+function showNoMailClientModal(mailText, subject, ccEmails) {
+    console.log('Générateur PF: Création du modal envoi manuel (sans client mail)');
+
+    // Stocker l'élément actuellement focusé
+    lastFocusedElement = document.activeElement;
+
+    // Créer l'overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-modal-overlay';
+    overlay.id = 'noMailClientModalOverlay';
+
+    const closeModal = () => {
+        overlay.remove();
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+            lastFocusedElement = null;
+        }
+    };
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'custom-modal-content';
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'custom-modal-header';
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'fr-btn--close fr-btn';
+    closeBtn.textContent = 'Fermer';
+    closeBtn.addEventListener('click', closeModal);
+    header.appendChild(closeBtn);
+
+    // Body
+    const body = document.createElement('div');
+    body.className = 'custom-modal-body';
+    const h2 = document.createElement('h2');
+    h2.className = 'custom-modal-title';
+    h2.textContent = 'Envoyer le mail manuellement';
+
+    // Alert
+    const alertEl = document.createElement('div');
+    alertEl.className = 'fr-alert fr-alert--info';
+    alertEl.style.marginBottom = '1.5rem';
+    const alertTitle = document.createElement('p');
+    alertTitle.className = 'fr-alert__title';
+    alertTitle.textContent = 'Pas de client mail configuré ?';
+    const alertDesc = document.createElement('p');
+    alertDesc.appendChild(document.createTextNode('Ouvrez votre webmail, créez un nouveau message, puis suivez les étapes ci-dessous.'));
+    alertEl.appendChild(alertTitle);
+    alertEl.appendChild(alertDesc);
+
+    const TO_ADDRESS = 'protection-fonctionnelle@gendarmerie.interieur.gouv.fr';
+
+    // Étape 1 — copier l'adresse destinataire
+    const step1 = document.createElement('div');
+    step1.className = 'fr-callout';
+    step1.style.marginBottom = '1.5rem';
+    const step1Title = document.createElement('p');
+    step1Title.className = 'fr-callout__text';
+    const step1Strong = document.createElement('strong');
+    step1Strong.textContent = 'Étape 1 — Destinataire';
+    step1Title.appendChild(step1Strong);
+    const copyAddrBtn = document.createElement('button');
+    copyAddrBtn.className = 'fr-btn fr-btn--primary';
+    copyAddrBtn.style.marginTop = '0.75rem';
+    copyAddrBtn.style.marginBottom = '0.75rem';
+    copyAddrBtn.textContent = 'Copier l\'adresse destinataire';
+    const step1Content = document.createElement('p');
+    step1Content.className = 'fr-callout__text';
+    step1Content.appendChild(document.createTextNode(TO_ADDRESS));
+    if (ccEmails.length > 0) {
+        step1Content.appendChild(document.createElement('br'));
+        const ccStrong = document.createElement('strong');
+        ccStrong.textContent = 'Copie (Cc) : ';
+        step1Content.appendChild(ccStrong);
+        step1Content.appendChild(document.createTextNode(ccEmails.join(', ')));
+    }
+    step1Content.appendChild(document.createElement('br'));
+    const objStrong = document.createElement('strong');
+    objStrong.textContent = 'Objet : ';
+    step1Content.appendChild(objStrong);
+    step1Content.appendChild(document.createTextNode(subject));
+    step1.appendChild(step1Title);
+    step1.appendChild(copyAddrBtn);
+    step1.appendChild(step1Content);
+
+    // Étape 2 — copier le contenu
+    const step2 = document.createElement('div');
+    step2.className = 'fr-callout';
+    step2.style.marginBottom = '1.5rem';
+    const step2Strong = document.createElement('strong');
+    step2Strong.textContent = 'Étape 2 — Contenu du mail';
+    const step2Desc = document.createElement('p');
+    step2Desc.className = 'fr-callout__text';
+    step2Desc.appendChild(step2Strong);
+    const textarea = document.createElement('textarea');
+    textarea.className = 'fr-input';
+    textarea.rows = 15;
+    textarea.readOnly = true;
+    textarea.style.fontFamily = 'monospace';
+    textarea.style.fontSize = '0.875rem';
+    textarea.value = mailText;
+    const copyContentBtn = document.createElement('button');
+    copyContentBtn.className = 'fr-btn fr-btn--primary';
+    copyContentBtn.style.marginTop = '0.75rem';
+    copyContentBtn.style.marginBottom = '0.75rem';
+    copyContentBtn.textContent = 'Copier le contenu du mail';
+    step2.appendChild(step2Desc);
+    step2.appendChild(copyContentBtn);
+    step2.appendChild(textarea);
+
+    // Bouton fermer
+    const footer = document.createElement('div');
+    footer.className = 'custom-modal-footer';
+    footer.style.marginTop = '0.5rem';
+    footer.style.marginBottom = '1.5rem';
+    const closeBtnFooter = document.createElement('button');
+    closeBtnFooter.className = 'fr-btn fr-btn--secondary';
+    closeBtnFooter.textContent = 'Fermer';
+    closeBtnFooter.addEventListener('click', closeModal);
+    footer.appendChild(closeBtnFooter);
+
+    // Assembler
+    body.appendChild(h2);
+    body.appendChild(alertEl);
+    body.appendChild(step1);
+    body.appendChild(step2);
+    body.appendChild(footer);
+    modalContent.appendChild(header);
+    modalContent.appendChild(body);
+    overlay.appendChild(modalContent);
+
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.classList.add('active');
+        copyAddrBtn.focus();
+    }, 10);
+
+    // Copier l'adresse
+    copyAddrBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(TO_ADDRESS).then(() => {
+            const originalText = this.textContent;
+            this.textContent = 'Adresse copiée ✓';
+            this.disabled = true;
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.disabled = false;
+            }, 2000);
+        }).catch(() => {
+            alert('Erreur lors de la copie. Veuillez copier manuellement : ' + TO_ADDRESS);
+        });
+    });
+
+    // Copier le contenu
+    copyContentBtn.addEventListener('click', function() {
+        textarea.select();
+        navigator.clipboard.writeText(mailText).then(() => {
+            const originalText = this.textContent;
+            this.textContent = 'Contenu copié ✓';
+            this.disabled = true;
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.disabled = false;
+            }, 2000);
+        }).catch(() => {
+            alert('Erreur lors de la copie. Veuillez sélectionner et copier manuellement le texte.');
+        });
+    });
+
+    // Fermer en cliquant sur l'overlay
     overlay.addEventListener('click', function(e) {
         if (e.target === overlay) {
             closeModal();
